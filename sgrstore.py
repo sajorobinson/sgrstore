@@ -180,7 +180,7 @@ def recordCheck():
             )
 
             DatabaseConnection.dbConnection.execute(
-                "UPDATE item SET STATUS = '2' WHERE ItemId = '" + itemQuery + "'"
+                "UPDATE item SET STATUS = '2', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = 'sajorobinson' WHERE ItemId = '" + itemQuery + "'"
             )
 
             try:
@@ -221,7 +221,7 @@ def recordCheck():
             )
 
             DatabaseConnection.dbConnection.execute(
-                "UPDATE item SET STATUS = '1' WHERE ItemId = '" + itemQuery + "'"
+                "UPDATE item SET STATUS = '1', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = 'sajorobinson' WHERE ItemId = '" + itemQuery + "'"
             )
 
             try:
