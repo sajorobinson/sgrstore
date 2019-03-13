@@ -227,11 +227,17 @@ def recordSearch():
 
 def listAll():
 
-    orderInput = input("> Order items by ROW, BIN, ITEM, or STATUS? ")
+    orderInput = input("> Order items ITEM, ROW, BIN, DESCRIPTION, CREATEDATE, CREATEUSER, UPDATEDATE, UPDATEUSER, or STATUS? ")
 
     orderInput = orderInput.upper()
 
-    if orderInput == "ROW":
+    if orderInput == "ITEM":
+
+        dbCursor.execute("SELECT * FROM item ORDER BY ItemId")
+
+        resultsParse()
+
+    elif orderInput == "ROW":
 
         dbCursor.execute("SELECT * FROM Item ORDER BY RowId")
 
@@ -243,9 +249,33 @@ def listAll():
 
         resultsParse()
 
-    elif orderInput == "ITEM":
+    elif orderInput == "DESCRIPTION":
 
-        dbCursor.execute("SELECT * FROM item ORDER BY ItemId")
+        dbCursor.execute("SELECT * FROM item ORDER BY Description")
+
+        resultsParse()
+
+    elif orderInput == "CREATEDATE":
+
+        dbCursor.execute("SELECT * FROM item ORDER BY CreateDate DESC")
+
+        resultsParse()
+
+    elif orderInput == "CREATEUSER":
+
+        dbCursor.execute("SELECT * FROM item ORDER BY CreateUser")
+
+        resultsParse()
+
+    elif orderInput == "UPDATEDATE":
+
+        dbCursor.execute("SELECT * FROM item ORDER BY UpdateDate DESC")
+
+        resultsParse()
+
+    elif orderInput == "UPDATEUSER":
+
+        dbCursor.execute("SELECT * FROM item ORDER BY UpdateUser")
 
         resultsParse()
 
