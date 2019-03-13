@@ -3,7 +3,7 @@ from lib import DbOperations
 
 def userInterface():
 
-    print("# SGRSTORE #")
+    print("# SGRSTORE 1.0")
 
     userInterface = True
 

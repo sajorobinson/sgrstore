@@ -22,15 +22,15 @@ def resultsParse():
 
         tableFormat = PrettyTable(
             [
-                "ITEM",
-                "ROW",
-                "BIN",
-                "DESCRIPTION",
-                "CREATE DATE",
-                "CREATE USER",
-                "UPDATE DATE",
-                "UPDATE USER",
-                "STATUS",
+                "ItemId",
+                "RowId",
+                "BinId",
+                "Description",
+                "Create date",
+                "Create user",
+                "Update date",
+                "Update user",
+                "Status",
             ]
         )
 
