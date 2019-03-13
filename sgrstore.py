@@ -3,10 +3,12 @@ from lib import DbOperations
 
 def userInterface():
 
+    print("# SGRSTORE #")
+
     userInterface = True
 
     while userInterface is True:
-
+        
         userActionChoice = input(
             "> Would you like to ADD, CHECK, SEARCH, LISTALL or EXIT? "
         )
