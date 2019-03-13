@@ -23,8 +23,8 @@ def resultsParse():
         tableFormat = PrettyTable(
             [
                 "ItemId",
-                "RowId",
                 "BinId",
+                "RowId",
                 "Description",
                 "Create date",
                 "Create user",
@@ -98,8 +98,8 @@ def recordCheck():
             tableFormat = PrettyTable(
                 [
                     "ItemId",
-                    "RowId",
                     "BinId",
+                    "RowId",
                     "Description",
                     "Create date",
                     "Create user",
@@ -156,8 +156,8 @@ def recordCheck():
             tableFormat = PrettyTable(
                 [
                     "ItemId",
-                    "RowId",
                     "BinId",
+                    "RowId",
                     "Description",
                     "Create date",
                     "Create user",
@@ -227,7 +227,7 @@ def recordSearch():
 
 def listAll():
 
-    orderInput = input("> Order items ITEM, ROW, BIN, DESCRIPTION, CREATEDATE, CREATEUSER, UPDATEDATE, UPDATEUSER, or STATUS? ")
+    orderInput = input("> Order items ITEM, BIN, ROW, DESCRIPTION, CREATEDATE, CREATEUSER, UPDATEDATE, UPDATEUSER, or STATUS? ")
 
     orderInput = orderInput.upper()
 
@@ -237,15 +237,15 @@ def listAll():
 
         resultsParse()
 
-    elif orderInput == "ROW":
-
-        dbCursor.execute("SELECT * FROM Item ORDER BY RowId")
-
-        resultsParse()
-
     elif orderInput == "BIN":
 
         dbCursor.execute("SELECT * FROM item ORDER BY BinId")
+
+        resultsParse()
+
+    elif orderInput == "ROW":
+
+        dbCursor.execute("SELECT * FROM Item ORDER BY RowId")
 
         resultsParse()
 
