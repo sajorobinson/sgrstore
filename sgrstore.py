@@ -33,4 +33,8 @@ def userInterface():
             DbOperations.dbConnection.close()
             sys.exit("> Goodbye!")
 
+        else:
+
+            print("> Please provide a valid option. ")
+
 userInterface()

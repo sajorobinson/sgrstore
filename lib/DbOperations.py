@@ -1,4 +1,5 @@
-import sys, sqlite3
+import sys, sqlite3, getpass
+from prettytable import PrettyTable
 
 # Connection with the database
 
@@ -6,19 +7,9 @@ dbConnection = sqlite3.connect(r"C:\\Users\\samjo\\documents\\sqlite\\SgrStore.d
 
 dbCursor = dbConnection.cursor()
 
-# Columns of the item table for the terminal
+# Get the username from environment variables (only for modifying update records)
 
-itemTableColumns = [
-    "ITEM",
-    "ROW",
-    "BIN",
-    "DESCRIPTION",
-    "CREATE DATE",
-    "CREATE USER",
-    "UPDATE DATE",
-    "UPDATE USER",
-    "STATUS",
-]
+currentUser = getpass.getuser()
 
 # For search queries, this receives all of the results from the database and prints them on the screen
 
@@ -29,18 +20,33 @@ def resultsParse():
 
     if results != []:
 
-        print(itemTableColumns)
+        tableFormat = PrettyTable(
+            [
+                "ITEM",
+                "ROW",
+                "BIN",
+                "DESCRIPTION",
+                "CREATE DATE",
+                "CREATE USER",
+                "UPDATE DATE",
+                "UPDATE USER",
+                "STATUS",
+            ]
+        )
 
         for item in results:
-            print(item)
+
+            tableFormat.add_row(item)
+
+        print(tableFormat)
 
     elif results == []:
 
-        print("No results found!")
+        print("> No results found!")
 
     else:
 
-        print("No results found!")
+        print("> No results found!")
 
 
 # This adds row, bin, or item records to the database
@@ -48,66 +54,28 @@ def resultsParse():
 
 def recordAdd():
 
-    userAddQuery = input("> Would you like to add a ROW, BIN, or ITEM? ")
+    itemName = str(input("> Insert an item name: "))
 
-    userAddQuery = userAddQuery.upper()
+    itemBin = str(
+        input("> Insert the bin number of the item (where you will store the item): ")
+    )
 
-    if userAddQuery == "ROW":
+    itemRow = str(
+        input("> Insert the row number of the bin (where the bin is stored): ")
+    )
 
-        rowName = str(input("> Provide a unique row name (crafts, tools, etc.): "))
+    dbConnection.execute(
+        "INSERT INTO item (RowId, BinId, Description, CreateDate, CreateUser, Status) VALUES (?,?,?,CURRENT_TIMESTAMP,'sajorobinson','1')",
+        (itemRow, itemBin, itemName),
+    )
 
-        dbConnection.execute("INSERT INTO row (Description) VALUES (?)", (rowName,))
+    try:
 
-        try:
+        dbConnection.commit()
 
-            dbConnection.commit()
+    except:
 
-        except:
-
-            print("ERROR: Failed to add row record. ")
-
-    elif userAddQuery == "BIN":
-
-        binName = str(input("> Provide a unique bin name (brushes, paper, electornics, etc.): "))
-
-        rowName = str(input("> Provide an existing row number (where you will store the bin): "))
-
-        dbConnection.execute(
-            "INSERT INTO bin (RowId, Description) VALUES (?,?)", (rowName, binName)
-        )
-
-        try:
-
-            dbConnection.commit()
-
-        except:
-
-            print("ERROR: Failed to add bin record. ")
-
-    elif userAddQuery == "ITEM":
-
-        itemName = str(input("> Insert an item name: "))
-
-        itemBin = str(input("> Insert the bin number of the item (where you will store the item): "))
-
-        itemRow = str(input("> Insert the row number of the bin (where the bin is stored): "))
-
-        dbConnection.execute(
-            "INSERT INTO item (RowId, BinId, Description, CreateDate, CreateUser, Status) VALUES (?,?,?,CURRENT_TIMESTAMP,'sajorobinson','1')",
-            (itemRow, itemBin, itemName),
-        )
-
-        try:
-
-            dbConnection.commit()
-
-        except:
-
-            print("ERROR: Failed to add item record. ")
-
-    else:
-
-        print("Please provide a valid option. ")
+        print("> ERROR: Failed to add item record. ")
 
 
 # This checks out or checks in records on the database by changing the status column
@@ -121,25 +89,40 @@ def recordCheck():
 
     if userCheckQuery == "OUT":
 
-        databaseSearch = dbCursor.execute(
-            "SELECT * FROM item WHERE Status = 1 ORDER BY RowId"
-        )
+        dbCursor.execute("SELECT * FROM item WHERE Status = 1 ORDER BY RowId")
 
         results = dbCursor.fetchall()
 
         if results != []:
 
-            print(itemTableColumns)
+            tableFormat = PrettyTable(
+                [
+                    "ItemId",
+                    "RowId",
+                    "BinId",
+                    "Description",
+                    "Create date",
+                    "Create user",
+                    "Update date",
+                    "Update user",
+                    "Status",
+                ]
+            )
 
             for item in results:
-                print(item)
+
+                tableFormat.add_row(item)
+
+            print(tableFormat)
 
             itemQuery = input(
-                "> Which item do you want to check out? Provide the ItemId (the number on the far-left) "
+                "> Which item do you want to check out? Provide the ItemId (on the far left): "
             )
 
             dbConnection.execute(
-                "UPDATE item SET STATUS = '2', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = 'sajorobinson' WHERE ItemId = '"
+                "UPDATE item SET STATUS = '2', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = '"
+                + currentUser
+                + "' WHERE ItemId = '"
                 + itemQuery
                 + "'"
             )
@@ -151,38 +134,53 @@ def recordCheck():
             except:
 
                 print(
-                    "ERROR: Failed to check out record. Please leave a physical note so the record can be updated later. "
+                    "> ERROR: Failed to check out record. Please leave a physical note so the record can be updated later. "
                 )
 
         elif results == []:
 
-            print("No items available to check out!")
+            print("> No items available to check out!")
 
         else:
 
-            print("No results found!")
+            print("> No results found!")
 
     elif userCheckQuery == "IN":
 
-        databaseSearch = dbCursor.execute(
-            "SELECT * FROM item WHERE Status = 2 ORDER BY RowId"
-        )
+        dbCursor.execute("SELECT * FROM item WHERE Status = 2 ORDER BY RowId")
 
         results = dbCursor.fetchall()
 
         if results != []:
 
-            print(itemTableColumns)
+            tableFormat = PrettyTable(
+                [
+                    "ItemId",
+                    "RowId",
+                    "BinId",
+                    "Description",
+                    "Create date",
+                    "Create user",
+                    "Update date",
+                    "Update user",
+                    "Status",
+                ]
+            )
 
             for item in results:
-                print(item)
+
+                tableFormat.add_row(item)
+
+            print(tableFormat)
 
             itemQuery = input(
-                "> Which item do you want to check in? Provide the ItemId (the number on the far-left) "
+                "> Which item do you want to check in? Provide the ItemId (on the far-left) "
             )
 
             dbConnection.execute(
-                "UPDATE item SET STATUS = '1', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = 'sajorobinson' WHERE ItemId = '"
+                "UPDATE item SET STATUS = '1', UpdateDate = CURRENT_TIMESTAMP, UpdateUser = '"
+                + currentUser
+                + "' WHERE ItemId = '"
                 + itemQuery
                 + "'"
             )
@@ -194,20 +192,20 @@ def recordCheck():
             except:
 
                 print(
-                    "ERROR: Failed to check out record. Please leave a physical note so the record can be updated later. "
+                    "> ERROR: Failed to check in record. Please leave a physical note so the record can be updated later. "
                 )
 
         elif results == []:
 
-            print("No items available to check out!")
+            print("> No items available to check in!")
 
         else:
 
-            print("No results found!")
+            print("> No results found!")
 
     else:
 
-        print("Please provide a valid option. ")
+        print("> Please provide a valid option. ")
 
 
 # This searches the item table for a key word
@@ -217,7 +215,7 @@ def recordSearch():
 
     userSearchQuery = input("> Search for a term: ")
 
-    databaseSearch = dbCursor.execute(
+    dbCursor.execute(
         "SELECT * FROM item WHERE Description LIKE '%" + userSearchQuery + "%'"
     )
 
@@ -229,34 +227,34 @@ def recordSearch():
 
 def listAll():
 
-    orderInput = input("> Order by ROW, BIN, ITEM, or STATUS? ")
+    orderInput = input("> Order items by ROW, BIN, ITEM, or STATUS? ")
 
     orderInput = orderInput.upper()
 
     if orderInput == "ROW":
 
-        databaseSearch = dbCursor.execute("SELECT * FROM item ORDER BY RowId")
+        dbCursor.execute("SELECT * FROM Item ORDER BY RowId")
 
         resultsParse()
 
     elif orderInput == "BIN":
 
-        databaseSearch = dbCursor.execute("SELECT * FROM item ORDER BY BinId")
+        dbCursor.execute("SELECT * FROM item ORDER BY BinId")
 
         resultsParse()
 
     elif orderInput == "ITEM":
 
-        databaseSearch = dbCursor.execute("SELECT * FROM item ORDER BY ItemId")
+        dbCursor.execute("SELECT * FROM item ORDER BY ItemId")
 
         resultsParse()
 
     elif orderInput == "STATUS":
 
-        databaseSearch = dbCursor.execute("SELECT * FROM item ORDER BY Status")
+        dbCursor.execute("SELECT * FROM item ORDER BY Status")
 
         resultsParse()
 
     else:
 
-        print("Please provide a valid option. ")
+        print("> Please provide a valid option. ")
