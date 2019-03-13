@@ -65,8 +65,8 @@ def recordAdd():
     )
 
     dbConnection.execute(
-        "INSERT INTO item (RowId, BinId, Description, CreateDate, CreateUser, Status) VALUES (?,?,?,CURRENT_TIMESTAMP,'sajorobinson','1')",
-        (itemRow, itemBin, itemName),
+        "INSERT INTO item (RowId, BinId, Description, CreateDate, CreateUser, Status) VALUES (?,?,?,CURRENT_TIMESTAMP,?,'1')",
+        (itemRow, itemBin, itemName, currentUser),
     )
 
     try:
